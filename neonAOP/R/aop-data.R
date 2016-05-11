@@ -85,9 +85,7 @@ create_extent_subset <- function(h5.extent, dims, res=c(1,1)){
 
 
 
-
-
-#' Create h5 file extent.
+#' Create h5 file extent ####
 #'
 #' This function uses a map tie point for an h5 file and data resolution to 
 #' create and return an object of class extent. 
@@ -121,7 +119,21 @@ create_extent <- function(fileName){
   return(rasExt)
 }
 
-## FUNCTION - assign noData Values, convert to raster ####
+## FUNCTION - Clean Reflectance Data ####
+
+#' Clean reflectance data
+#'
+#' This function reads in data from the "Reflecatnce" dataset, applies the data
+#' ignore value, scales the data and returns a properly "projected" raster object.
+#' @param filename the path to the h5 file.
+#' @param reflMatrix , the matrix read in to be converted to a raster.
+#' @param epsg - the epsg code for the CRS used to spatially locate the raster.
+#' @keywords hdf5, extent
+#' @export
+#' @examples
+#' clean_refl_data(fileName, reflMatrix, epsg)
+
+
 clean_refl_data <- function(fileName, reflMatrix, epsg){
   # r  get attributes for the Reflectance dataset
   reflInfo <- h5readAttributes(fileName, "Reflectance")
@@ -141,7 +153,18 @@ clean_refl_data <- function(fileName, reflMatrix, epsg){
   return(reflRast)
 }
 
-## FUNCTION - read band
+## FUNCTION - Read Band ####
+#' read band
+#'
+#' This function reads in data from the "Reflecatnce" dataset, applies the data
+#' ignore value, scales the data and returns a properly "projected" raster object.
+#' @param filename the path to the h5 file.
+#' @param index a list formated object  e.g. list(1:3, 1:6, bands)
+#' @keywords hdf5, extent
+#' @export
+#' @examples
+#' read_band(fileName, index)
+
 read_band <- function(fileName, index){
   # Extract or "slice" data for band 34 from the HDF5 file
   aBand<- h5read(fileName, "Reflectance", index=index)
@@ -153,7 +176,20 @@ read_band <- function(fileName, index){
   return(aBand)
 }
 
-## FUNCTION calc Index Extent####
+## FUNCTION Calculate Index Extent ####
+
+
+## FUNCTION - Calculate Index Extent ####
+#'
+#' This function calculates an index based subset to slice out data from an H5 file
+#' using an input spatial extent. 
+#' @param clipExtent xxxx 
+#' @param h5Extent XXX
+#' @keywords hdf5, extent
+#' @export
+#' @examples
+#' calculate_index_extent(clipExten, h5Extent)
+#' 
 calculate_index_extent <- function(clipExtent, h5Extent){
   if(ext.clip@xmin <= h5.ext@xmin){
     xmin.index <- 1 
@@ -191,7 +227,26 @@ calculate_index_extent <- function(clipExtent, h5Extent){
 # x, y, wavelength
 # dims <- list(1:5,2:6,c(2,3,4))
 # trying to set a default dims value of NA
-open_band <- function(fileName, bandNum,  epsg, subsetData=FALSE, tiePt=NULL, dims=NULL){
+
+
+## FUNCTION - Calculate Index Extent ####
+#'
+#' This function calculates an index based subset to slice out data from an H5 file
+#' using an input spatial extent. 
+#' @param fileName the path to the h5 file that you wish to open. 
+#' @param bandNum the band number in the reflectance data that you wish to open
+#' @param epsg the epsg code for the CRS that the data are in.
+#' @param subsetData, a boolean object. default is FALSE. If set to true, then
+#' ... subset a slice out from the h5 file. otherwise take the entire xy extent.
+#' @param dims, an optional object used if subsetData = TRUE that specifies the 
+#' index extent to slice from the h5 file
+#' @keywords hdf5, extent
+#' @export
+#' @examples
+#' open_band(fileName, bandNum, epsg, subsetData=FALSE, dims=NULL)
+#' 
+
+open_band <- function(fileName, bandNum,  epsg, subsetData=FALSE, dims=NULL){
   # make sure any open connections are closed
   H5close()
   # if the band is a subset of the file, subset=TRUE
@@ -221,10 +276,23 @@ open_band <- function(fileName, bandNum,  epsg, subsetData=FALSE, tiePt=NULL, di
 }
 
 
-## Function Open Many bands
+## FUNCTION - Open Bands, Create Stack ####
+#'
+#' This function calculates an index based subset to slice out data from an H5 file
+#' using an input spatial extent. It returns a rasterStack object of bands. 
+#' @param fileName the path to the h5 file that you wish to open. 
+#' @param bandNum the band number in the reflectance data that you wish to open
+#' @param epsg the epsg code for the CRS that the data are in.
+#' @param subsetData, a boolean object. default is FALSE. If set to true, then
+#' ... subset a slice out from the h5 file. otherwise take the entire xy extent.
+#' @param dims, an optional object used if subsetData = TRUE that specifies the 
+#' index extent to slice from the h5 file
+#' @keywords hdf5, extent
+#' @export
+#' @examples
+#' open_band(fileName, bandNum, epsg, subsetData=FALSE, dims=NULL)
+#' 
 
-# create a function to plot RGB data
-# inputs bands (list)
 # 
 create_stack <- function(file, bands, epsg, subset, dims){
   
