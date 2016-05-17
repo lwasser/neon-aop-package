@@ -57,13 +57,13 @@ get_data_dims <- function(fileName){
 #' This function takes an input h5 file extent (the file that you wish to subset
 #' and it creates a subset spatial extent object for the new
 #' subset file (x/y min and max in map units).
-#' @param h5.extent the spatial extent (of class extent) of the H5 file to be subsetted
+#' @param h5Extent the spatial extent (of class extent) of the H5 file to be subsetted
 #' @param dims - the x/y min and max INDEX values used to slice the H5 file
 #' @param res - a vector of 2 objects representing the X and Y resolution (pixel size)
 #' @keywords hdf5, dimensions
 #' @export
 #' @examples
-#' create_extent_subset(h5.extent, dims, res=c(xres, yres))
+#' create_extent_subset(h5Extent, dims, res=c(xres, yres))
 
 
 ## FUNCTION - create spatial extent object
@@ -191,32 +191,32 @@ read_band <- function(fileName, index){
 #' calculate_index_extent(clipExten, h5Extent)
 #' 
 calculate_index_extent <- function(clipExtent, h5Extent){
-  if(ext.clip@xmin <= h5.ext@xmin){
+  if(clipExtent@xmin <= h5Extent@xmin){
     xmin.index <- 1 
   } else {
-    xmin.index <- round((ext.clip@xmin- h5.ext@xmin)/xscale)}
+    xmin.index <- round((clipExtent@xmin- h5Extent@xmin)/xscale)}
   
   # calculate y ymin.index
-  if(ext.clip@ymax > h5.ext@ymax){
+  if(clipExtent@ymax > h5Extent@ymax){
     ymin.index <- 1
   } else {
-    ymin.index <- round((h5.ext@ymax - ext.clip@ymax) / yscale)}
+    ymin.index <- round((h5Extent@ymax - clipExtent@ymax) / yscale)}
   
   # calculate x xmax.index
   
   # if xmax of the clipping extent is greater than the extent of the H5 file
   # assign x max to xmax of the H5 file
-  if(ext.clip@xmax >= h5.ext@xmax){
-    xmax.index <- round((h5.ext@xmax-h5.ext@xmin) / xscale)
+  if(clipExtent@xmax >= h5Extent@xmax){
+    xmax.index <- round((h5Extent@xmax-h5Extent@xmin) / xscale)
   } else {
-    xmax.index <- round((ext.clip@xmax-h5.ext@xmin) / xscale)}
+    xmax.index <- round((clipExtent@xmax-h5Extent@xmin) / xscale)}
   
   # calculate y ymax.index
   
-  if(ext.clip@ymin <= h5.ext@ymin){
-    ymax.index <- round((h5.ext@ymax - h5.ext@ymin) / yscale)
+  if(clipExtent@ymin <= h5Extent@ymin){
+    ymax.index <- round((h5Extent@ymax - h5Extent@ymin) / yscale)
   } else {
-    ymax.index <- round((h5.ext@ymax - ext.clip@ymin)/yscale) }
+    ymax.index <- round((h5Extent@ymax - clipExtent@ymin)/yscale) }
   new.index <- c(xmin.index, xmax.index, ymin.index, ymax.index)
   return(new.index)
 }
@@ -294,7 +294,7 @@ open_band <- function(fileName, bandNum,  epsg, subsetData=FALSE, dims=NULL){
 #' 
 
 # 
-create_stack <- function(file, bands, epsg, subset, dims){
+create_stack <- function(file, bands, epsg, subset=FALSE, dims=NULL){
   
   # use lapply to run the band function across all three of the bands
   rgb_rast <- lapply(bands, open_band,
@@ -310,3 +310,118 @@ create_stack <- function(file, bands, epsg, subset, dims){
   return(rgb_rast)
   
 } 
+
+
+
+
+## FUNCTION - Extract Average Reflectance
+#'
+#' This function calculates an index based subset to slice out data from an H5 file
+#' using an input spatial extent. It returns a rasterStack object of bands. 
+#' @param aRaster REQUIRED. a raster within an H5 file that you wish to get an mean, max, min value from
+#' @param aMask REQUIRED. a raster of the same extent with NA values for areas that you don't 
+#' want to calculate the mean, min or max values from. 
+#' @param aFun REQUIRED. the function that you wish to use on the raster, mean, max, min etc
+#' @keywords hdf5, extent
+#' @export
+#' @examples
+#' extract_av_refl(aRaster, aMask, aFun=mean)
+#' 
+extract_av_refl <- function(aRaster, aMask=NULL, aFun=mean){
+  # mask band
+  if(!is.null(aMask)){
+    aRaster <- mask(aRaster, aMask) }
+  # geat mean
+  a.band.mean <- cellStats(aRaster, 
+                           aFun, 
+                           na.rm=TRUE)
+  return(a.band.mean)
+} 
+
+## FUNCTION - Extract Average Reflectance
+#'
+#' This function calculates an index based subset to slice out data from an H5 file
+#' using an input spatial extent. It returns a rasterStack object of bands. 
+#' @param fileName REQUIRED. The path to the h5 file that you want to open.
+#' @param bandNum REQUIRED. The band number that you wish to open, default = 1 
+#' @param epsg the epsg code for the CRS that the data are in.
+#' @param subsetData, a boolean object. default is FALSE. If set to true, then
+#' ... subset a slice out from the h5 file. otherwise take the entire xy extent.
+#' @param dims, an optional object used if subsetData = TRUE that specifies the 
+#' index extent to slice from the h5 file
+#' @param mask a raster containg NA values for areas that should not be included in the 
+#' output summary statistic. 
+#' @param fun the summary statistic that you wish to run on the data  (e.g. mean, max, min)
+#' default = mean
+#' @keywords hdf5, extent
+#' @export
+#' @examples
+#' get_spectra(fileName, bandNum)
+
+get_spectra <- function(fileName, bandNum=1, 
+                        epsg=32611, subset=TRUE,
+                        dims=NULL, mask=NULL, fun=mean){
+  # open a band
+  a.raster <- open_band(fileName, bandNum, 
+                        epsg, subset,
+                        dims)
+  # extract a particular spectral value (min, max, mean from the raster)
+  refl <- extract_av_refl(a.raster, mask, aFun = fun)
+  return(refl)
+}
+
+## FUNCTION - Extract Average Reflectance
+#'
+#' This function calculates an index based subset to slice out data from an H5 file
+#' using an input spatial extent. It returns a rasterStack object of bands. 
+#' @param spectra REQUIRED. a LIST of spectra returned from Lapply.
+#' @param wavelengths REQUIRED. The vector of wavelength values of the same length as 
+#' the spectra object
+#' @keywords hdf5, extent
+#' @export
+#' @examples
+#' clean_spectra(fileName, bandNum)
+
+clean_spectra <- function(spectra, wavelengths){
+  # reformat the output list
+  spectra<- data.frame(unlist(spectra))
+  spectra$wavelength <- wavelengths
+  names(spectra)[1] <- "reflectance"
+  return(spectra)
+}
+
+
+
+
+## FUNCTION - Return Crop Extent
+#'
+#' This function calculates an index based subset to slice out data from an H5 file
+#' using an input spatial extent. It returns a rasterStack object of bands. 
+#' @param extent1 REQUIRED. an extent object.
+#' @param extent2 REQUIRED. a second extent object
+#' @param proj4 REQUIRED. the proj4 string for both extents
+#' @keywords raster, extent
+#' @export
+#' @examples
+#' return_crop_extent(extent1, extent2)
+
+### THIS ISN"T WORKING
+#return_crop_extent <- function(extent1, extent2, proj4){
+  # turn both extents into spatial polygons
+#  ext1.poly <- as(extent1, "SpatialPolygons")
+#  ext2.poly <- as(extent2, "SpatialPolygons")
+  
+  # ensure the two extents overlap
+#  if(gIntersects(h5.ext.poly, clip.extent)){
+#    cropExtent <- gIntersection(ext1.poly, ext2.poly)
+    #return(cropExtent)
+#  } ELSE {
+#    message("Spatial extents don't overlap.")
+#  }
+  
+#  crs(h5.ext.poly) <- CRS("+proj=utm +zone=11 +datum=WGS84 +units=m +no_defs +ellps=WGS84 +towgs84=0,0,0")
+  
+  
+
+#}
+
