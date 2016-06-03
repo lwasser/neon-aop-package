@@ -2,9 +2,12 @@
 
 export(calculate_index_extent)
 export(clean_refl_data)
+export(clean_spectra)
 export(create_extent)
 export(create_extent_subset)
 export(create_stack)
+export(extract_av_refl)
 export(get_data_dims)
+export(get_spectra)
 export(open_band)
 export(read_band)

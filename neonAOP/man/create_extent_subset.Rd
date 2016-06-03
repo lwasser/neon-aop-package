@@ -7,11 +7,11 @@
 create_extent_subset(h5.extent, dims, res = c(1, 1))
 }
 \arguments{
-\item{h5.extent}{the spatial extent (of class extent) of the H5 file to be subsetted}
-
 \item{dims}{- the x/y min and max INDEX values used to slice the H5 file}
 
 \item{res}{- a vector of 2 objects representing the X and Y resolution (pixel size)}
+
+\item{h5Extent}{the spatial extent (of class extent) of the H5 file to be subsetted}
 }
 \description{
 This function takes an input h5 file extent (the file that you wish to subset
@@ -19,7 +19,7 @@ and it creates a subset spatial extent object for the new
 subset file (x/y min and max in map units).
 }
 \examples{
-create_extent_subset(h5.extent, dims, res=c(xres, yres))
+create_extent_subset(h5Extent, dims, res=c(xres, yres))
 }
 \keyword{dimensions}
 \keyword{hdf5,}

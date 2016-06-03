@@ -1,8 +1,8 @@
 Package: neonAOP
-Title: What the Package Does (one line, title case)
+Title: Open, Extract Data From, Visualize NEON Remote Sensing Data
 Version: 0.0.0.9000
-Authors@R: person("First", "Last", email = "first.last@example.com", role = c("aut", "cre"))
-Description: What the package does (one paragraph).
+Authors@R: person("Leah", "Wasser", email = "lwasser@neoninc.org", role = c("aut", "cre"))
+Description: This package supports efficient use of NEON H5 files containing hyperspectral remote sensing data. Functions allow you to quickly open and extract data from a H5 file. Extract a spatial subset from an H5 file. And create a raster stack of a spectral subset of NEON data.
 Depends:
     R (>= 3.2.3)
 License: What license is it under?

@@ -108,7 +108,7 @@ create_extent <- function(fileName){
   # get the x and y resolution
   res <- as.numeric(c(mapInfo[2], mapInfo[3]))
   # get dims to use to cal xMax, YMin
-  dims <- get_data_dims(f)
+  dims <- get_data_dims(fileName)
   # calculate the xMAX value and the YMIN value
   xMax <- xMin + (dims[1]*res[1])
   yMin <- yMax - (dims[2]*res[2])
@@ -183,8 +183,8 @@ read_band <- function(fileName, index){
 #'
 #' This function calculates an index based subset to slice out data from an H5 file
 #' using an input spatial extent. 
-#' @param clipExtent xxxx 
-#' @param h5Extent XXX
+#' @param clipExtent the spatial extent of the clip region that you wan to use to subset data. 
+#' @param h5Extent the spatial extent of the H5 file. If the extents don't overlap this function won't work.
 #' @keywords hdf5, extent
 #' @export
 #' @examples
