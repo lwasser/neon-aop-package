@@ -5,7 +5,7 @@
 \title{This function calculates an index based subset to slice out data from an H5 file
 using an input spatial extent.}
 \usage{
-calculate_index_extent(clipExtent, h5Extent)
+calculate_index_extent(clipExtent, h5Extent, xscale = 1, yscale = 1)
 }
 \arguments{
 \item{clipExtent}{the spatial extent of the clip region that you wan to use to subset data.}

@@ -190,7 +190,12 @@ read_band <- function(fileName, index){
 #' @examples
 #' calculate_index_extent(clipExten, h5Extent)
 #' 
-calculate_index_extent <- function(clipExtent, h5Extent){
+calculate_index_extent <- function(clipExtent, h5Extent, xscale=1, yscale=1){
+  # check to see if the class of clipExtent = Extent, if not, convert
+  if(class(clipExtent) != "Extent"){
+    clipExtent <- extent(clipExtent)
+    }
+  
   if(clipExtent@xmin <= h5Extent@xmin){
     xmin.index <- 1 
   } else {

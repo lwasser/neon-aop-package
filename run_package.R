@@ -8,3 +8,8 @@ install("neonAOP")
 
 ## install from github
 install_github("lwasser/neon-aop-package/neonAOP")
+
+library(rgdal)
+GDALinfo("NEONdata/D17-California/SJER/2013/lidar/SJER_lidarAspect.tif")
+
+
