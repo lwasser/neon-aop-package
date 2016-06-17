@@ -143,7 +143,9 @@ clean_refl_data <- function(fileName, reflMatrix, epsg){
   reflMatrix[reflMatrix == noData] <- NA
   
   # apply the scale factor
-  reflMatrix <- reflMatrix/(as.numeric(reflInfo$`Scale Factor`))
+  # reflMatrix <- reflMatrix/(as.numeric(reflInfo$`Scale Factor`))
+  # manually assigning the scale factor now because it's wrong in the files.
+  reflMatrix <- reflMatrix/10000
   
   # now we can create a raster and assign its spatial extent
   reflRast <- raster(reflMatrix,
