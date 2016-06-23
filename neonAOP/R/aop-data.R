@@ -12,11 +12,11 @@
 ## Use-- OPEN ONE BAND
 ## open_band(fileName, bandNum, epsg, dims)
 ## fileName (path in char format): path to the H5 file of interest
-##  bandNum (numeric): the band number you wish to open 
+##  bandNum (numeric): the band number you wish to open
 ## epsg (numeric); the epsg code for the coordinate reference system that the data are in
 ## dims (numeric vector): the x y and z dims of the data you are opening
 
-## Use - create_stack 
+## Use - create_stack
 ## create_Stack(bands, epsg)
 ## bands - a numeric vector of band  numbers that you want to open
 ## epsg - the CRS of the data
@@ -43,7 +43,7 @@ get_data_dims <- function(fileName){
   # grab the dimensions of the object
   sid <- H5Dget_space(did)
   dims <- H5Sget_simple_extent_dims(sid)$size
-  
+
   # close everything
   H5Sclose(sid)
   H5Dclose(did)
@@ -75,20 +75,20 @@ create_extent_subset <- function(h5.extent, dims, res=c(1,1)){
   # calculate the xMAX value and the YMIN value
   xMax <-h5.extent@xmin + (dims[2] * res[1])
   yMin <-h5.extent@ymax - (dims[4] * res[2])
-  
+
   # create extent object (left, right, top, bottom)
   rasExt <- extent(xMin, xMax, yMin, yMax)
   # return object of class extent
   return(rasExt)
-  
+
 }
 
 
 
 #' Create h5 file extent ####
 #'
-#' This function uses a map tie point for an h5 file and data resolution to 
-#' create and return an object of class extent. 
+#' This function uses a map tie point for an h5 file and data resolution to
+#' create and return an object of class extent.
 #' @param filename the path to the h5 file
 #' @param res a vector of 2 objects - x resolution, y resolution
 #' @keywords hdf5, extent
@@ -97,9 +97,9 @@ create_extent_subset <- function(h5.extent, dims, res=c(1,1)){
 #' create_extent(fileName, res=c(xres, yres))
 
 create_extent <- function(fileName){
-  # Grab upper LEFT corner coordinate from map info dataset 
+  # Grab upper LEFT corner coordinate from map info dataset
   mapInfo <- h5read(fileName, "map info")
-  
+
   # create object with each value in the map info dataset
   mapInfo<-unlist(strsplit(mapInfo, ","))
   # grab the XY left corner coordinate (xmin,ymax)
@@ -112,7 +112,7 @@ create_extent <- function(fileName){
   # calculate the xMAX value and the YMIN value
   xMax <- xMin + (dims[1]*res[1])
   yMin <- yMax - (dims[2]*res[2])
-  
+
   # create extent object (left, right, top, bottom)
   rasExt <- extent(xMin, xMax, yMin, yMax)
   # return object of class extent
@@ -141,16 +141,16 @@ clean_refl_data <- function(fileName, reflMatrix, epsg){
   noData <- as.numeric(reflInfo$`data ignore value`)
   # set all values = 15,000 to NA
   reflMatrix[reflMatrix == noData] <- NA
-  
+
   # apply the scale factor
   # reflMatrix <- reflMatrix/(as.numeric(reflInfo$`Scale Factor`))
   # manually assigning the scale factor now because it's wrong in the files.
   reflMatrix <- reflMatrix/10000
-  
+
   # now we can create a raster and assign its spatial extent
   reflRast <- raster(reflMatrix,
                      crs=CRS(paste0("+init=epsg:", epsg)))
-  
+
   # return a scaled and "cleaned" raster object
   return(reflRast)
 }
@@ -184,42 +184,42 @@ read_band <- function(fileName, index){
 ## FUNCTION - Calculate Index Extent ####
 #'
 #' This function calculates an index based subset to slice out data from an H5 file
-#' using an input spatial extent. 
-#' @param clipExtent the spatial extent of the clip region that you wan to use to subset data. 
+#' using an input spatial extent.
+#' @param clipExtent the spatial extent of the clip region that you wan to use to subset data.
 #' @param h5Extent the spatial extent of the H5 file. If the extents don't overlap this function won't work.
 #' @keywords hdf5, extent
 #' @export
 #' @examples
 #' calculate_index_extent(clipExten, h5Extent)
-#' 
+#'
 calculate_index_extent <- function(clipExtent, h5Extent, xscale=1, yscale=1){
   # check to see if the class of clipExtent = Extent, if not, convert
   if(class(clipExtent) != "Extent"){
     clipExtent <- extent(clipExtent)
     }
-  
+
   if(clipExtent@xmin <= h5Extent@xmin){
-    xmin.index <- 1 
+    xmin.index <- 1
   } else {
     xmin.index <- round((clipExtent@xmin- h5Extent@xmin)/xscale)}
-  
+
   # calculate y ymin.index
   if(clipExtent@ymax > h5Extent@ymax){
     ymin.index <- 1
   } else {
     ymin.index <- round((h5Extent@ymax - clipExtent@ymax) / yscale)}
-  
+
   # calculate x xmax.index
-  
+
   # if xmax of the clipping extent is greater than the extent of the H5 file
   # assign x max to xmax of the H5 file
   if(clipExtent@xmax >= h5Extent@xmax){
     xmax.index <- round((h5Extent@xmax-h5Extent@xmin) / xscale)
   } else {
     xmax.index <- round((clipExtent@xmax-h5Extent@xmin) / xscale)}
-  
+
   # calculate y ymax.index
-  
+
   if(clipExtent@ymin <= h5Extent@ymin){
     ymax.index <- round((h5Extent@ymax - h5Extent@ymin) / yscale)
   } else {
@@ -239,19 +239,19 @@ calculate_index_extent <- function(clipExtent, h5Extent, xscale=1, yscale=1){
 ## FUNCTION - Calculate Index Extent ####
 #'
 #' This function calculates an index based subset to slice out data from an H5 file
-#' using an input spatial extent. 
-#' @param fileName the path to the h5 file that you wish to open. 
+#' using an input spatial extent.
+#' @param fileName the path to the h5 file that you wish to open.
 #' @param bandNum the band number in the reflectance data that you wish to open
 #' @param epsg the epsg code for the CRS that the data are in.
 #' @param subsetData, a boolean object. default is FALSE. If set to true, then
 #' ... subset a slice out from the h5 file. otherwise take the entire xy extent.
-#' @param dims, an optional object used if subsetData = TRUE that specifies the 
+#' @param dims, an optional object used if subsetData = TRUE that specifies the
 #' index extent to slice from the h5 file
 #' @keywords hdf5, extent
 #' @export
 #' @examples
 #' open_band(fileName, bandNum, epsg, subsetData=FALSE, dims=NULL)
-#' 
+#'
 
 open_band <- function(fileName, bandNum,  epsg, subsetData=FALSE, dims=NULL){
   # make sure any open connections are closed
@@ -261,12 +261,12 @@ open_band <- function(fileName, bandNum,  epsg, subsetData=FALSE, dims=NULL){
   # note subtracting one because R indexes all values 1:3 whereas in a zero based system
   # that would yield one more value -- double check on this but it creates the proper
   # resolution
-  if(subsetData){ 
+  if(subsetData){
     index <- list(dims[1]:(dims[2]-1), dims[3]:(dims[4]-1), bandNum)
     aBand <- read_band(fileName, index)
     # clean data
     aBand <- clean_refl_data(fileName, aBand, epsg)
-    # finally apply extent to raster, using extent function 
+    # finally apply extent to raster, using extent function
     h5.extent <- create_extent(fileName)
     extent(aBand) <- create_extent_subset(h5.extent, dims)
   } else {
@@ -277,7 +277,7 @@ open_band <- function(fileName, bandNum,  epsg, subsetData=FALSE, dims=NULL){
     aBand <- clean_refl_data(fileName, aBand, epsg)
     extent(aBand) <- create_extent(fileName)
   }
-  
+
   # return matrix object
   return(aBand)
 }
@@ -286,78 +286,89 @@ open_band <- function(fileName, bandNum,  epsg, subsetData=FALSE, dims=NULL){
 ## FUNCTION - Open Bands, Create Stack ####
 #'
 #' This function calculates an index based subset to slice out data from an H5 file
-#' using an input spatial extent. It returns a rasterStack object of bands. 
-#' @param fileName the path to the h5 file that you wish to open. 
+#' using an input spatial extent. It returns a rasterStack object of bands.
+#' @param fileName the path to the h5 file that you wish to open.
 #' @param bandNum the band number in the reflectance data that you wish to open
 #' @param epsg the epsg code for the CRS that the data are in.
 #' @param subsetData, a boolean object. default is FALSE. If set to true, then
 #' ... subset a slice out from the h5 file. otherwise take the entire xy extent.
-#' @param dims, an optional object used if subsetData = TRUE that specifies the 
+#' @param dims, an optional object used if subsetData = TRUE that specifies the
 #' index extent to slice from the h5 file
 #' @keywords hdf5, extent
 #' @export
 #' @examples
 #' open_band(fileName, bandNum, epsg, subsetData=FALSE, dims=NULL)
-#' 
+#'
 
-# 
+#
 create_stack <- function(file, bands, epsg, subset=FALSE, dims=NULL){
-  
+
   # use lapply to run the band function across all three of the bands
   rgb_rast <- lapply(bands, open_band,
                      fileName=file,
                      epsg=epsg,
                      subset=subset,
                      dims=dims)
-  
+
   # create a raster stack from the output
   rgb_rast <- stack(rgb_rast)
   # reassign band names
-  names(rgb_rast) <- bands
+  names(rgb_rast) <- get_wavelength(file, bands)
   return(rgb_rast)
-  
-} 
+}
 
-
+## Function - Find wavelengths for each layer in a stack and generate names
+#'
+#' This internal function assigns meaningful names to raster layers in stacks.
+#' @param file the path to the h5 file
+#' @param bands the band numbers in the reflectance data
+#'
+get_wavelength <- function(file, bands) {
+  all_wavelengths <- h5read(file, 'wavelength')
+  layer_wavelengths <- all_wavelengths[bands]
+  wavelength_in_nanometers <- layer_wavelengths * 1000
+  layer_names <- paste('nm', round(wavelength_in_nanometers), sep = '_')
+  layer_names
+}
 
 
 ## FUNCTION - Extract Average Reflectance
 #'
 #' This function calculates an index based subset to slice out data from an H5 file
-#' using an input spatial extent. It returns a rasterStack object of bands. 
+#' using an input spatial extent. It returns a rasterStack object of bands.
 #' @param aRaster REQUIRED. a raster within an H5 file that you wish to get an mean, max, min value from
-#' @param aMask REQUIRED. a raster of the same extent with NA values for areas that you don't 
-#' want to calculate the mean, min or max values from. 
+#' @param aMask REQUIRED. a raster of the same extent with NA values for areas that you don't
+#' want to calculate the mean, min or max values from.
 #' @param aFun REQUIRED. the function that you wish to use on the raster, mean, max, min etc
 #' @keywords hdf5, extent
 #' @export
 #' @examples
 #' extract_av_refl(aRaster, aMask, aFun=mean)
-#' 
+#'
 extract_av_refl <- function(aRaster, aMask=NULL, aFun=mean){
   # mask band
   if(!is.null(aMask)){
     aRaster <- mask(aRaster, aMask) }
   # geat mean
-  a.band.mean <- cellStats(aRaster, 
-                           aFun, 
+  a.band.mean <- cellStats(aRaster,
+                           aFun,
                            na.rm=TRUE)
   return(a.band.mean)
-} 
+}
 
 ## FUNCTION - Extract Average Reflectance
 #'
 #' This function calculates an index based subset to slice out data from an H5 file
-#' using an input spatial extent. It returns a rasterStack object of bands. 
+#' using an input spatial extent. It returns a rasterStack object of bands.
 #' @param fileName REQUIRED. The path to the h5 file that you want to open.
-#' @param bandNum REQUIRED. The band number that you wish to open, default = 1 
+#' @param bandNum REQUIRED. The band number that you wish to open, default = 1
 #' @param epsg the epsg code for the CRS that the data are in.
 #' @param subsetData, a boolean object. default is FALSE. If set to true, then
 #' ... subset a slice out from the h5 file. otherwise take the entire xy extent.
-#' @param dims, an optional object used if subsetData = TRUE that specifies the 
+#' @param dims, an optional object used if subsetData = TRUE that specifies the
 #' index extent to slice from the h5 file
-#' @param mask a raster containg NA values for areas that should not be included in the 
-#' output summary statistic. 
+#' @param mask a raster containg NA values for areas that should not be included in the
+#' output summary statistic.
 #' @param fun the summary statistic that you wish to run on the data  (e.g. mean, max, min)
 #' default = mean
 #' @keywords hdf5, extent
@@ -365,11 +376,11 @@ extract_av_refl <- function(aRaster, aMask=NULL, aFun=mean){
 #' @examples
 #' get_spectra(fileName, bandNum)
 
-get_spectra <- function(fileName, bandNum=1, 
+get_spectra <- function(fileName, bandNum=1,
                         epsg=32611, subset=FALSE,
                         dims=NULL, mask=NULL, fun=mean){
   # open a band
-  a.raster <- open_band(fileName, bandNum, 
+  a.raster <- open_band(fileName, bandNum,
                         epsg, subset,
                         dims)
   # extract a particular spectral value (min, max, mean from the raster)
@@ -380,9 +391,9 @@ get_spectra <- function(fileName, bandNum=1,
 ## FUNCTION - Extract Average Reflectance
 #'
 #' This function calculates an index based subset to slice out data from an H5 file
-#' using an input spatial extent. It returns a rasterStack object of bands. 
+#' using an input spatial extent. It returns a rasterStack object of bands.
 #' @param spectra REQUIRED. a LIST of spectra returned from Lapply.
-#' @param wavelengths REQUIRED. The vector of wavelength values of the same length as 
+#' @param wavelengths REQUIRED. The vector of wavelength values of the same length as
 #' the spectra object
 #' @keywords hdf5, extent
 #' @export
@@ -403,7 +414,7 @@ clean_spectra <- function(spectra, wavelengths){
 ## FUNCTION - Return Crop Extent
 #'
 #' This function calculates an index based subset to slice out data from an H5 file
-#' using an input spatial extent. It returns a rasterStack object of bands. 
+#' using an input spatial extent. It returns a rasterStack object of bands.
 #' @param extent1 REQUIRED. an extent object.
 #' @param extent2 REQUIRED. a second extent object
 #' @param proj4 REQUIRED. the proj4 string for both extents
@@ -417,7 +428,7 @@ clean_spectra <- function(spectra, wavelengths){
   # turn both extents into spatial polygons
 #  ext1.poly <- as(extent1, "SpatialPolygons")
 #  ext2.poly <- as(extent2, "SpatialPolygons")
-  
+
   # ensure the two extents overlap
 #  if(gIntersects(h5.ext.poly, clip.extent)){
 #    cropExtent <- gIntersection(ext1.poly, ext2.poly)
@@ -425,10 +436,10 @@ clean_spectra <- function(spectra, wavelengths){
 #  } ELSE {
 #    message("Spatial extents don't overlap.")
 #  }
-  
+
 #  crs(h5.ext.poly) <- CRS("+proj=utm +zone=11 +datum=WGS84 +units=m +no_defs +ellps=WGS84 +towgs84=0,0,0")
-  
-  
+
+
 
 #}
 
