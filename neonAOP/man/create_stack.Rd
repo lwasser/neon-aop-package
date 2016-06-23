@@ -10,7 +10,7 @@ create_stack(file, bands, epsg, subset = FALSE, dims = NULL)
 \arguments{
 \item{epsg}{the epsg code for the CRS that the data are in.}
 
-\item{dims, }{an optional object used if subsetData = TRUE that specifies the 
+\item{dims, }{an optional object used if subsetData = TRUE that specifies the
 index extent to slice from the h5 file}
 
 \item{fileName}{the path to the h5 file that you wish to open.}

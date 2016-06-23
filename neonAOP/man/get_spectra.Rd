@@ -15,10 +15,10 @@ get_spectra(fileName, bandNum = 1, epsg = 32611, subset = FALSE,
 
 \item{epsg}{the epsg code for the CRS that the data are in.}
 
-\item{dims, }{an optional object used if subsetData = TRUE that specifies the 
+\item{dims, }{an optional object used if subsetData = TRUE that specifies the
 index extent to slice from the h5 file}
 
-\item{mask}{a raster containg NA values for areas that should not be included in the 
+\item{mask}{a raster containg NA values for areas that should not be included in the
 output summary statistic.}
 
 \item{fun}{the summary statistic that you wish to run on the data  (e.g. mean, max, min)

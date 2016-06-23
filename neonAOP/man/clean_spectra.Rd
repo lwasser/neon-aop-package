@@ -10,7 +10,7 @@ clean_spectra(spectra, wavelengths)
 \arguments{
 \item{spectra}{REQUIRED. a LIST of spectra returned from Lapply.}
 
-\item{wavelengths}{REQUIRED. The vector of wavelength values of the same length as 
+\item{wavelengths}{REQUIRED. The vector of wavelength values of the same length as
 the spectra object}
 }
 \description{

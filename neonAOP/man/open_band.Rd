@@ -17,7 +17,7 @@ open_band(fileName, bandNum, epsg, subsetData = FALSE, dims = NULL)
 \item{subsetData, }{a boolean object. default is FALSE. If set to true, then
 ... subset a slice out from the h5 file. otherwise take the entire xy extent.}
 
-\item{dims, }{an optional object used if subsetData = TRUE that specifies the 
+\item{dims, }{an optional object used if subsetData = TRUE that specifies the
 index extent to slice from the h5 file}
 }
 \description{

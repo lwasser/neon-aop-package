@@ -12,7 +12,7 @@ create_extent(fileName)
 \item{res}{a vector of 2 objects - x resolution, y resolution}
 }
 \description{
-This function uses a map tie point for an h5 file and data resolution to 
+This function uses a map tie point for an h5 file and data resolution to
 create and return an object of class extent.
 }
 \examples{

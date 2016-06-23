@@ -10,7 +10,7 @@ extract_av_refl(aRaster, aMask = NULL, aFun = mean)
 \arguments{
 \item{aRaster}{REQUIRED. a raster within an H5 file that you wish to get an mean, max, min value from}
 
-\item{aMask}{REQUIRED. a raster of the same extent with NA values for areas that you don't 
+\item{aMask}{REQUIRED. a raster of the same extent with NA values for areas that you don't
 want to calculate the mean, min or max values from.}
 
 \item{aFun}{REQUIRED. the function that you wish to use on the raster, mean, max, min etc}
