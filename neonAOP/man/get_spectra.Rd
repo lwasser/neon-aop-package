@@ -5,7 +5,7 @@
 \title{This function calculates an index based subset to slice out data from an H5 file
 using an input spatial extent. It returns a rasterStack object of bands.}
 \usage{
-get_spectra(fileName, bandNum = 1, epsg = 32611, subset = TRUE,
+get_spectra(fileName, bandNum = 1, epsg = 32611, subset = FALSE,
   dims = NULL, mask = NULL, fun = mean)
 }
 \arguments{

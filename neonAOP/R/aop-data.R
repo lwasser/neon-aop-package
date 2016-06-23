@@ -366,7 +366,7 @@ extract_av_refl <- function(aRaster, aMask=NULL, aFun=mean){
 #' get_spectra(fileName, bandNum)
 
 get_spectra <- function(fileName, bandNum=1, 
-                        epsg=32611, subset=TRUE,
+                        epsg=32611, subset=FALSE,
                         dims=NULL, mask=NULL, fun=mean){
   # open a band
   a.raster <- open_band(fileName, bandNum, 
