@@ -322,7 +322,6 @@ create_stack <- function(file, bands, epsg, subset=FALSE, dims=NULL){
 #' This internal function assigns meaningful names to raster layers in stacks.
 #' @param file the path to the h5 file
 #' @param bands the band numbers in the reflectance data
-#'
 get_wavelength <- function(file, bands) {
   all_wavelengths <- h5read(file, 'wavelength')
   layer_wavelengths <- all_wavelengths[bands]
